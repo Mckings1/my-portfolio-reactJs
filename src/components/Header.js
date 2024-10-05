@@ -33,6 +33,9 @@ const socials = [
 ];
 
 const Header = () => {
+  const headerRef = useRef(null);
+  const [transform, setTransform] = useState("translateY(0)");
+
   const handleClick = (anchor) => () => {
     const id = `${anchor}-section`;
     const element = document.getElementById(id);
@@ -44,97 +47,96 @@ const Header = () => {
     }
   };
 
-  const headerRef = useRef(null);
-  const [transform, setTransform] = useState("translateY(0)");
-  let lastScrollY = useRef(0); // Keeps track of the last scroll position
-
-  const handleScroll = () => {
-    const currentScrollY = window.scrollY;
-
-    if (currentScrollY > lastScrollY.current) {
-      // Scrolling down
-      setTransform("translateY(-200px)");
-    } else {
-      // Scrolling up
-      setTransform("translateY(0)");
-    }
-
-    lastScrollY.current = currentScrollY; // Update last scroll position
-  };
-
   useEffect(() => {
-    window.addEventListener("scroll", handleScroll);
+    let lastScrollY = window.scrollY;
 
+    const handleScroll = () => {
+      if (window.scrollY > lastScrollY) {
+        // Scrolling down
+        setTransform("translateY(-100px)"); // Adjust the value as needed
+      } else {
+        // Scrolling up
+        setTransform("translateY(0)");
+      }
+      lastScrollY = window.scrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
   return (
-    <Box
-      // transform
-      // transition: {transform 0.3s ease}
-      zIndex={1000}
-      position="fixed"
-      top={0}
-      left={0}
-      right={0}
-      translateY={0}
-      transitionProperty="transform"
-      transitionDuration=".3s"
-      transitionTimingFunction="ease-in-out"
-      backgroundColor="#18181b"
+    <header
+      ref={headerRef}
+      style={{
+        transform,
+        transition: "transform 0.3s ease", // Smooth transition effect
+      }}
     >
-      <Box color="white" maxWidth="1280px" margin="0 auto">
-        <HStack
-          px={16}
-          py={4}
-          justifyContent="space-between"
-          alignItems="center"
-        >
-          <nav>
-            <HStack spacing={4}>
-              {socials.map(({ icon, url }, index) => (
-                <a
-                  key={index}
-                  href={url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <IconButton
-                    icon={<FontAwesomeIcon icon={icon} />}
-                    isRound
-                    variant="ghost"
-                    aria-label="social-media-link"
-                    size="lg"
-                    colorScheme="whiteAlpha"
-                  />
-                </a>
-              ))}
-            </HStack>
-          </nav>
+      <Box
+        position="fixed"
+        top={0}
+        left={0}
+        right={0}
+        transform={transform} // Apply the transform state here
+        transition="transform 0.3s ease" // Smooth transition for Box
+        backgroundColor="#18181b"
+        zIndex={1000} // Ensure it stays on top of other content
+      >
+        <Box color="white" maxWidth="1280px" margin="0 auto">
+          <HStack
+            px={16}
+            py={4}
+            justifyContent="space-between"
+            alignItems="center"
+          >
+            <nav>
+              <HStack spacing={4}>
+                {socials.map(({ icon, url }, index) => (
+                  <a
+                    key={index}
+                    href={url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <IconButton
+                      icon={<FontAwesomeIcon icon={icon} />}
+                      isRound
+                      variant="ghost"
+                      aria-label="social-media-link"
+                      size="lg"
+                      colorScheme="whiteAlpha"
+                    />
+                  </a>
+                ))}
+              </HStack>
+            </nav>
 
-          <nav>
-            <HStack spacing={8}>
-              <a
-                href="#projects"
-                onClick={handleClick("projects")}
-                style={{ cursor: "pointer" }}
-              >
-                Projects
-              </a>
-              <a
-                href="#contactme"
-                onClick={handleClick("contactme")}
-                style={{ cursor: "pointer" }}
-              >
-                Contact Me
-              </a>
-            </HStack>
-          </nav>
-        </HStack>
+            <nav>
+              <HStack spacing={8}>
+                <a
+                  href="#projects-section" // Adjusted to match your ID
+                  onClick={handleClick("projects")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Projects
+                </a>
+                <a
+                  href="#contactme-section" // Adjusted to match your ID
+                  onClick={handleClick("contactme")}
+                  style={{ cursor: "pointer" }}
+                >
+                  Contact Me
+                </a>
+              </HStack>
+            </nav>
+          </HStack>
+        </Box>
       </Box>
-    </Box>
+    </header>
   );
 };
+
 export default Header;
