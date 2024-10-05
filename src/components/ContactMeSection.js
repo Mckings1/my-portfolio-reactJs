@@ -23,10 +23,35 @@ const LandingSection = () => {
   const { onOpen } = useAlertContext();
 
   const formik = useFormik({
-    initialValues: {},
-    onSubmit: (values) => {},
-    validationSchema: Yup.object({}),
+    initialValues: {
+      firstName: "",
+      email: "",
+      type: "'hireMe' | 'openSource' | 'other'", // Default value
+      comment: "",
+    },
+    validationSchema: Yup.object({
+      firstName: Yup.string().required("Required"),
+      email: Yup.string().email("Invalid email address").required("Required"),
+      type: Yup.string(), // Optional field
+      comment: Yup.string()
+        .min(25, "Must be at least 25 characters")
+        .required("Required"),
+    }),
+    onSubmit: async (values, { resetForm }) => {
+      await submit(values);
+      resetForm();
+    },
   });
+
+  useEffect(() => {
+    if (response) {
+      const alertMessage =
+        response.type === "success"
+          ? "Form submitted successfully!"
+          : "Error submitting form!";
+      onOpen({ message: alertMessage });
+    }
+  }, [response, onOpen]);
 
   return (
     <FullScreenSection
@@ -40,18 +65,39 @@ const LandingSection = () => {
           Contact me
         </Heading>
         <Box p={6} rounded="md" w="100%">
-          <form>
+          <form onSubmit={formik.handleSubmit}>
             <VStack spacing={4}>
-              <FormControl isInvalid={false}>
+              <FormControl
+                isInvalid={
+                  formik.touched.firstName && Boolean(formik.errors.firstName)
+                }
+              >
                 <FormLabel htmlFor="firstName">Name</FormLabel>
-                <Input id="firstName" name="firstName" />
-                <FormErrorMessage></FormErrorMessage>
+                <Input
+                  id="firstName"
+                  name="firstName"
+                  {...formik.getFieldProps("firstName")}
+                />
+                {formik.touched.firstName && formik.errors.firstName ? (
+                  <FormErrorMessage>{formik.errors.firstName}</FormErrorMessage>
+                ) : null}
               </FormControl>
-              <FormControl isInvalid={false}>
+
+              <FormControl
+                isInvalid={formik.touched.email && Boolean(formik.errors.email)}
+              >
                 <FormLabel htmlFor="email">Email Address</FormLabel>
-                <Input id="email" name="email" type="email" />
-                <FormErrorMessage></FormErrorMessage>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  {...formik.getFieldProps("email")}
+                />
+                {formik.touched.email && formik.errors.email ? (
+                  <FormErrorMessage>{formik.errors.email}</FormErrorMessage>
+                ) : null}
               </FormControl>
+
               <FormControl>
                 <FormLabel htmlFor="type">Type of enquiry</FormLabel>
                 <Select id="type" name="type">
@@ -62,12 +108,30 @@ const LandingSection = () => {
                   <option value="other">Other</option>
                 </Select>
               </FormControl>
-              <FormControl isInvalid={false}>
+
+              <FormControl
+                isInvalid={
+                  formik.touched.comment && Boolean(formik.errors.comment)
+                }
+              >
                 <FormLabel htmlFor="comment">Your message</FormLabel>
-                <Textarea id="comment" name="comment" height={250} />
-                <FormErrorMessage></FormErrorMessage>
+                <Textarea
+                  id="comment"
+                  name="comment"
+                  {...formik.getFieldProps("comment")}
+                  height={250}
+                />
+                {formik.touched.comment && formik.errors.comment ? (
+                  <FormErrorMessage>{formik.errors.comment}</FormErrorMessage>
+                ) : null}
               </FormControl>
-              <Button type="submit" colorScheme="purple" width="full">
+
+              <Button
+                type="submit"
+                colorScheme="purple"
+                width="full"
+                isLoading={isLoading}
+              >
                 Submit
               </Button>
             </VStack>

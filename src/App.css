@@ -1,3 +1,18 @@
+/* Global styles for images */
+img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Button styling for responsiveness */
+button {
+  padding: 0.5rem 1rem;
+  font-size: 1rem;
+  @media (max-width: 768px) {
+    padding: 0.25rem 0.5rem;
+    font-size: 0.875rem;
+  }
+}
 /* .App {
   text-align: center;
 }

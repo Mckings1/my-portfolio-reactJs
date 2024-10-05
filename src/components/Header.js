@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -44,8 +44,37 @@ const Header = () => {
     }
   };
 
+  const headerRef = useRef(null);
+  const [transform, setTransform] = useState("translateY(0)");
+  let lastScrollY = useRef(0); // Keeps track of the last scroll position
+
+  const handleScroll = () => {
+    const currentScrollY = window.scrollY;
+
+    if (currentScrollY > lastScrollY.current) {
+      // Scrolling down
+      setTransform("translateY(-200px)");
+    } else {
+      // Scrolling up
+      setTransform("translateY(0)");
+    }
+
+    lastScrollY.current = currentScrollY; // Update last scroll position
+  };
+
+  useEffect(() => {
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
     <Box
+      // transform
+      // transition: {transform 0.3s ease}
+      zIndex={1000}
       position="fixed"
       top={0}
       left={0}
@@ -88,14 +117,14 @@ const Header = () => {
           <nav>
             <HStack spacing={8}>
               <a
-                href="#"
+                href="#projects"
                 onClick={handleClick("projects")}
                 style={{ cursor: "pointer" }}
               >
                 Projects
               </a>
               <a
-                href="#"
+                href="#contactme"
                 onClick={handleClick("contactme")}
                 style={{ cursor: "pointer" }}
               >

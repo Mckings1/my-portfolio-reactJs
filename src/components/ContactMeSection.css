@@ -1,4 +1,21 @@
 #contact-form {
   z-index: 2;
-  background-color: yellow;
+  /* background-color: yellow; Main background color */
+  padding: 1rem; /* Default padding */
+  border-radius: 8px; /* Optional: adds rounded corners */
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  #contact-form {
+    padding: 0.25rem 0.5rem; /* Reduced padding for smaller screens */
+    font-size: 0.875rem; /* Adjusted font size */
+  }
+
+  /* You can also adjust the width and other styles here if needed */
+  #contact-form input,
+  #contact-form textarea {
+    width: 100%; /* Full width on smaller screens */
+    margin-bottom: 0.5rem; /* Spacing between fields */
+  }
 }
